@@ -4,7 +4,8 @@
   "description": "Can you really *manipulate* The DOM though?",
   "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -15,10 +16,13 @@
   "license": "ISC",
   "dependencies": {
     "chai": "^4.1.0",
+    "dotenv": "^16.0.2",
     "eslint": "^4.3.0",
+    "express": "^4.18.1",
     "express-react-views": "^0.11.0",
     "jsdom": "^11.1.0",
     "mocha": "^3.4.2",
+    "mongoose": "^6.6.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },
