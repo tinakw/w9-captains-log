@@ -6,12 +6,10 @@
 
 const express = require('express');
 const app = express();
-// const fruits = require('./models/fruits');
-// const veggies = require('./models/veggies');
 require('dotenv').config();
 const mongoose = require('mongoose');
-const Log = require('./models/logs');
-// const Fruit = require('./models/Fruit');
+const Log = require('./models/Log');
+const methodOverride = require('method-override');
 
 // -------------------------
 // Mongoose Connection Stuff
@@ -42,43 +40,109 @@ app.engine('jsx', require('express-react-views').createEngine());
 // -------------------------
 
 app.use(express.urlencoded({extended:false}));
+// -------------------------
+  // Method Override
+  // -------------------------
+  
+  app.use(methodOverride('_method'));
 
 // -------------------------
 // Routes
 // -------------------------
 app.get('/', (req, res) => {
-  res.render('Index') 
+  res.render('logs/Index') 
  });
 
- app.get('/create', (req, res) => {
-  res.render('received') 
- });
-
+//  app.get('/create', (req, res) => {
+//   res.render('received') 
+//  });
+// New
+app.get('/logs/new', (req, res) => {
+  res.render('logs/New');
+  console.log('Make a New Log Form Page')
+});
  // -------------------------
 // Create
 // -------------------------
 
- app.post('/create', (req, res)=>{
-  if(req.body.shipisbroken === 'on'){
-    req.body.shipisbroken = true;
-  } else{
-    req.body.shipisbroken = false;
+ 
+
+app.post('/logs', (req, res) => {
+  if (req.body.shipIsBroken === 'on') {
+    req.body.shipIsBroken = true;
+  } else {
+    req.body.shipIsBroken = false;
   }
-  Log.create(req.body, (error, createdLog)=>{
+  Log.create(req.body, (error, createdLog) => {
     res.redirect('/logs')
+  //   res.redirect('/logs/Show')
+    console.log('Log Created')
+
   })
- })
+});
 
  // -------------------------
 // Show
 // -------------------------
 
 app.get('/logs/:id', (req, res)=>{
-  Logs.findOne({_id: req.params.id},(error, foundLog)=>{
+  Log.findOne({_id: req.params.id},(error, foundLog)=>{
     res.render('logs/Show',{
       log: foundLog
     });
   });
+});
+
+app.get('/logs', (req, res) => {
+  Log.find({}, (error, allLogs) => {
+    res.render('logs/Index', {
+      logs: allLogs
+    });
+    console.log('Log Index Page')
+
+  })
+});
+
+// Update
+
+app.put('/edit/log/:id', (req, res) => {
+  if (req.body.shipIsBroken === 'on') {
+    req.body.shipIsBroken = true
+  } else {
+    req.body.shipIsBroken = false
+  }
+  Log.updateOne({
+    _id: req.params.id
+  }, req.body, (error, data) => {
+    if (error) {
+      console.error(error);
+      res.json({
+        error: error
+      });
+    } else {
+      res.redirect(`/logs`);
+      console.log('Log Updated')
+    }
+  });
+});
+app.get('/edit/:id', (req, res) => {
+  Log.findOne({ _id: req.params.id }, (error, foundLog) => {
+    res.render('logs/Edit', {
+      log: foundLog
+    });
+    console.log('Edit Log Page')
+  });
+});
+// // Delete
+
+app.delete('/delete/:id', (req, res) => {
+  Log.deleteOne({
+    _id: req.params.id
+  }, (error, data) => {
+    console.log(data);
+    res.redirect('/logs');
+    console.log('Log Deleted')
+  })
 });
 
 
@@ -89,3 +153,5 @@ app.get('/logs/:id', (req, res)=>{
 app.listen(3000, () => {
   console.log('listening on port 3000');
 });
+
+
